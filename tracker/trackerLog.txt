@@ -1,0 +1,20 @@
+Tracker is currently running on port : 5000
+Client socket is connected with socket number: 5
+Client 5 sends message: create_user harsh 12
+Client 5 sends message: login harsh 12 5500
+Client 5 sends message: create_group a
+Client 5 sends message: join_group a
+Client 5 sends message: upload_file client.cpp a 446db605d938ee3a81f373e0e9f6d06bfd98d3e65a0114bc48b4e0bafdb80453 2302
+Client 5 sends message: list_files a
+Client 5 sends message: leave_group a
+Client 5 sends message: list_files a
+Client 5 sends message: join_group a
+Client 5 sends message: create_user sahil 12
+Client 5 sends message: login sahil 12 5500
+Client socket is connected with socket number: 6
+Client 6 sends message: login sahil 12 5500
+Client 6 sends message: join_group a
+Client 5 sends message: accept_request a sahil
+Client 5 sends message: list_requests a
+Client 5 sends message: accept_request sahil a
+Client 5 sends message: accept_request a sahil
