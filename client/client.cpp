@@ -1,4 +1,5 @@
 #include "headers.h"
+unordered_map<string, File> filesInGroup;
 int main(int argc, char *argv[])
 {
 
@@ -60,10 +61,10 @@ int main(int argc, char *argv[])
             cerr << "Error accepting client connection" << endl;
             return 1;
         }
-
+        cout << "Leecher " << leecher_socket << " is Connected\n";
         char clientIP[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, &(leeder_addr.sin_addr), clientIP, INET_ADDRSTRLEN);
-        // int clientPort = ntohs(leeder_addr.sin_port);
+        int clientPort = ntohs(leeder_addr.sin_port);
 
         thread t1 = thread(handleLeecherReq, leecher_socket);
         t1.detach();

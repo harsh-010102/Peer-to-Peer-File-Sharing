@@ -43,6 +43,36 @@ pair<pair<string, int>, pair<string, int>> processArgs(int argc, char *argv[])
     return ans;
 }
 
+pair<int, string> findPieceSelection(vector<unordered_set<string>> &chunk_info, vector<pair<int, int>> &chunk_status)
+{
+    sort(chunk_status.begin(), chunk_status.end());
+    cout << 1 << endl;
+
+    int seeders = chunk_status.begin()->first;
+    cout << 2 << endl;
+
+    int chunk_no = chunk_status.begin()->second;
+    cout << 3 << endl;
+
+    auto r = rand() % seeders;
+    cout << 4 << endl;
+
+    auto it = chunk_info[chunk_no].begin();
+    cout << 5 << endl;
+
+    advance(it, r);
+    string address = *it;
+    cout << 6 << endl;
+
+    chunk_status.erase(chunk_status.begin());
+    cout << 7 << endl;
+    cout << "Piece wise and address " << endl;
+    cout << chunk_no << " " << address << endl;
+    cout << 8 << endl;
+
+    return {chunk_no, address};
+}
+
 void loggerHelper(string txt)
 {
     string loggerFile = "trackerLog.txt";

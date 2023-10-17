@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall
 DEPS = headers.h
-OBJ = calcSHA.o client.o utils.o helpers.o
+OBJ = file.o calcSHA.o  utils.o helpers.o client.o
 %.o: %.cpp $(DEPS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
