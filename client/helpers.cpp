@@ -28,6 +28,10 @@ void handleCommand(int seederSocket, string trackerIp, int trackerPort, int clie
     {
         string input;
         getline(cin, input);
+        if (input.size() == 0)
+        {
+            continue;
+        }
         vector<string> str_tokens = str_tokenize(input, ' ');
 
         string output = execute(str_tokens, client_socket, trackerPort, clientPort);
@@ -265,8 +269,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
     tokens.erase(tokens.begin());
     tokens.erase(tokens.begin());
     vector<string> addr = tokens;
-    cout << "sha and sizze" << endl;
-    cout << SHA << " " << size << endl;
+
     for (auto it : addr)
     {
         cout << it << " ";
@@ -275,7 +278,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
 
     int no_of_chunks = ceil(size * 1.0 / chunk_size);
     int temp = no_of_chunks;
-    cout << "no_of chun " << no_of_chunks << endl;
+    // cout << "no_of chun " << no_of_chunks << endl;
 
     vector<bool> v(no_of_chunks, false);
 
@@ -292,7 +295,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
         string ipAddr = address[0];
         int port = stoi(address[1]);
 
-        cout << "Ip and port----" << ipAddr << " " << port << endl;
+        // cout << "Ip and port----" << ipAddr << " " << port << endl;
 
         int seederSocket = socket(AF_INET, SOCK_STREAM, 0);
         if (seederSocket == -1)
@@ -322,7 +325,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
         }
 
         string exec_command = "get_chunk_info " + filename;
-        cout << exec_command << "\n";
+        // cout << exec_command << "\n";
 
         if (write(seederSocket, exec_command.c_str(), exec_command.size()) < 0)
         {
@@ -345,7 +348,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
         cout << message << endl;
 
         vector<string> message_tokens = str_tokenize(message, ' ');
-        cout << "message tokens size " << message_tokens.size() << endl;
+        // cout << "message tokens size " << message_tokens.size() << endl;
         if (message_tokens[0] == "Error")
         {
             cerr << "Error fetching IP\n";
@@ -353,10 +356,10 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
         }
         else
         {
-            for (int i = 0; i < message_tokens.size(); i++)
-            {
-                cout << message_tokens[i] << endl;
-            }
+            // for (int i = 0; i < message_tokens.size(); i++)
+            // {
+            //     cout << message_tokens[i] << endl;
+            // }
             if (message_tokens[0] == "Success")
             {
                 for (int i = 1; i < message_tokens.size(); i++)
@@ -426,22 +429,21 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
                     return "";
                 }
             }
-            cout << "here0 " << no_of_chunks << endl;
 
             int mod = size % chunk_size;
-            cout << "here1 " << no_of_chunks << endl;
+            if (mod == 0)
+            {
+                mod = chunk_size;
+            }
             char buffer1[mod];
-            cout << "here2 " << no_of_chunks << endl;
 
             bzero(buffer1, mod);
-            cout << "here3 " << no_of_chunks << endl;
-            
-            if (write(output_fd, buffer1, chunk_size) < 0)
+
+            if (write(output_fd, buffer1, mod) < 0)
             {
                 cerr << "Error writing file\n";
                 return "";
             }
-            cout << "here4 " << no_of_chunks << endl;
         }
         close(output_fd);
 
@@ -449,8 +451,8 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
         for (int i = 0; i < no_of_chunks; i++)
         {
             pair<int, string> chunk = findPieceSelection(chunk_info, chunk_status);
-            cout << "chunk --------------"
-                 << " " << chunk.first << " " << chunk.second << endl;
+            // cout << "chunk --------------"
+            //      << " " << chunk.first << " " << chunk.second << endl;
             // std::stringstream ss;
 
             // ss << "get_chunk " << filename << " " << chunk.first;
@@ -488,14 +490,14 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
                 return "";
             }
 
-            cout << "chunk --------------"
-                 << " " << chunk.first << " " << chunk.second << endl;
-            cout << "-------------------1111111111------------------" << endl;
-            cout << filename << endl;
+            // cout << "chunk --------------"
+            //      << " " << chunk.first << " " << chunk.second << endl;
+            // cout << "-------------------1111111111------------------" << endl;
+            // cout << filename << endl;
             string a = to_string(chunk.first);
             string new_command1 = "get_chunk " + filename + " " + a;
             cout << new_command1 << endl;
-            cout << "-------------------2222222222------------------" << endl;
+            // cout << "-------------------2222222222------------------" << endl;
 
             if (write(seeder_socket, new_command1.c_str(), new_command1.size()) < 0)
             {
@@ -534,9 +536,13 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
                         int pos = chunk_no * chunk_size;
 
                         int size_of_last = size % chunk_size;
+                        if (size_of_last == 0)
+                        {
+                            size_of_last = chunk_size;
+                        }
                         lseek(output_fd1, pos, SEEK_SET);
 
-                        if (write(output_fd1, output, size_of_last)<0)
+                        if (write(output_fd1, output, size_of_last) < 0)
                         {
                             cerr << "error";
                             return "";
@@ -550,7 +556,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
 
                         lseek(output_fd1, pos, SEEK_SET);
 
-                        if (write(output_fd1, output, chunk_size)<0)
+                        if (write(output_fd1, output, chunk_size) < 0)
                         {
                             cerr << "return error";
 
@@ -567,6 +573,10 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             close(seeder_socket);
         }
     }
+    SHA = findSHA(destination_path.c_str());
+    int bytes = fileSize(destination_path.c_str());
+    cout << "SHA is " << SHA << endl;
+    cout << "Bytes is" << bytes << endl;
     return "";
 }
 string upload_file(int client_socket, string file_name, string filepath, string groupId, string SHA, int bytes)
@@ -597,6 +607,9 @@ string upload_file(int client_socket, string file_name, string filepath, string 
         }
         else
         {
+            cout << "SHA is " << SHA << endl;
+            cout << "Size is " << bytes << endl;
+
             return output;
         }
     }
@@ -891,11 +904,11 @@ string handleCommandofLeecher(vector<string> input_tokens, int leecher_socket)
             {
                 string file_name = input_tokens[1];
                 int chunk_no = stoi(input_tokens[2]);
-                cout << "-------------------";
-                cout << "file_name" << file_name << " " << chunk_no << endl;
+                // cout << "-------------------";
+                // cout << "file_name" << file_name << " " << chunk_no << endl;
                 int pos = chunk_no * chunk_size;
                 cout << "pos in get_chuck call--" << endl;
-                cout << pos << endl;
+                // cout << pos << endl;
 
                 // auto itx = filesInGroup.find(file_name);
 

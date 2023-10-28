@@ -30,29 +30,40 @@ void handleReq(int clientSocket, string clientIP, int clientPort)
             close(clientSocket);
             return;
         }
-        string a = "";
-        for (int i = 0; i < 4; i++)
-        {
-            a += input[i];
-        }
+        // string a = "";
+        // for (int i = 0; i < 4; i++)
+        // {
+        //     a += input[i];
+        // }
 
-        if (a == "exit")
-        {
-            string output2;
-            logout(clientSocket, output2);
-            write(clientSocket, output2.c_str(), output2.size());
-            close(clientSocket);
-            return;
-        }
-        string msg(input);
+        // if (a == "exit")
+        // {
+        //     string output2;
+        //     logout(clientSocket, output2);
+        //     write(clientSocket, output2.c_str(), output2.size());
+        //     close(clientSocket);
+        //     return;
+        // }
+        string msg = input;
 
         vector<string> input_tokens = str_tokenize(msg);
+        // vector<string> input_tokens;
+        cout << "hello";
         cout << "Client " << to_string(clientSocket) << " sends message : " << msg;
         // string output = "Message Successfully sent!!\n";
         string output = handleCommand(input_tokens, clientSocket, clientIP, clientPort);
+        if (output == "exit")
+        {
+            output = "bye";
+        }
         if (write(clientSocket, output.c_str(), output.size()) <= 0)
         {
             loggerHelper("Client socket number" + to_string(clientSocket) + "Write failed or zero" + '\n');
+            close(clientSocket);
+            return;
+        }
+        if (output == "bye")
+        {
             close(clientSocket);
             return;
         }
@@ -215,12 +226,13 @@ string handleCommand(vector<string> input_tokens, int clientSocket, string clien
         // string groupId, string fileName
         if (input_tokens.size() != 3)
         {
-            output = "Invalid argument. It should be download_file  <file_path> <group_id>\n";
+            output = "Invalid argument. It should be download_file <group_id> <file_path>\n";
         }
         else
         {
-            string fileName = input_tokens[1];
-            string groupId = input_tokens[2];
+            string groupId = input_tokens[1];
+            string fileName = input_tokens[2];
+            cout << "Group Id " << groupId << endl;
             downloadFiles(clientSocket, output, groupId, fileName);
         }
     }
@@ -232,12 +244,46 @@ string handleCommand(vector<string> input_tokens, int clientSocket, string clien
         }
         logout(clientSocket, output);
     }
+    else if (input_tokens[0] == "exit")
+    {
+        string out;
+        cout << "hello" << endl;
+        if (input_tokens.size() != 1)
+        {
+            output = "Invalid argument. It should be exit\n";
+        }
+        logout(clientSocket, out);
+        return "exit";
+    }
     else
     {
         output = "Invalid Command...........\n";
     }
 
     return output;
+}
+void exitComm(int clientSocket, string &output)
+{
+    auto it = userHelper.find(clientSocket);
+    if (it == userHelper.end())
+    {
+        output = "Bye";
+        return;
+    }
+    else
+    {
+        string username = it->second;
+        auto it2 = userDetails.find(username);
+        string groupID = it2->second.groupID;
+        string address = it2->second.ip + ":" + to_string(it2->second.port);
+        removeFilesOnLogout(groupID, clientSocket, address);
+        it2->second.ip = "";
+        it2->second.port = -1;
+        it2->second.isLogin = false;
+        userHelper.erase(it);
+        output = "Bye\n";
+        return;
+    }
 }
 
 void listFiles(int clientSocket, string &output, string groupId)
@@ -297,7 +343,7 @@ void downloadFiles(int clientSocket, string &output, string groupId, string file
                 auto it3 = temp.find(fileName);
                 output += it3->second.SHA;
                 output += " ";
-                output += it3->second.bytes;
+                output += to_string(it3->second.bytes);
                 output += " ";
                 if (it3 != temp.end())
                 {

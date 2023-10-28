@@ -64,7 +64,7 @@ void printUserDetails();
 bool createUser(string username, string password);
 void login(string username, string password, string &output, int clientSocket, string clientIP, int clientPort);
 void logout(int clientSocket, string &output);
-
+void exitComm(int clientSocket, string &output);
 // group
 void createGroup(string groupId, string &output, int clientSocket);
 void joinGroup(string groupId, string &output, int clientSocket);

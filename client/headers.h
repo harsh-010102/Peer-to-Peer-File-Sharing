@@ -5,12 +5,12 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <openssl/sha.h>
+#include <openssl/sha.h>    
 #include <sstream>
 
 using namespace std;
-#define chunk_size 1024
-#define BUFF 20480
+#define chunk_size 32768
+#define BUFF 65536
 
 string findSHA(const char *file_path);
 
