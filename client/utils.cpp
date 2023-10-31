@@ -34,6 +34,7 @@ pair<pair<string, int>, pair<string, int>> processArgs(int argc, char *argv[])
     tracker_info.push_back(str);
     string trackerIp = tracker_info[0];
     int trackerPort = atoi(tracker_info[1].c_str());
+    cout << trackerIp << " "<< trackerPort<<endl;
     vector<string> clientAddress = str_tokenize(address, ':');
     pair<pair<string, int>, pair<string, int>> ans;
     ans.first.first = clientAddress[0];

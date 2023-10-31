@@ -82,3 +82,5 @@ void listFiles(int clientSocket, string &output, string groupId);
 void downloadFiles(int clientSocket, string &output, string groupId, string fileName);
 void addChunk(string groupId, string &output, int clientSocket, string filename, string SHA, int fileSize);
 void uploadFiles(string groupId, string &output, int clientSocket, string filename, string SHA, int fileSize);
+
+vector<string> file_tokenize(string filepath);

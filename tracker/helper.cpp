@@ -560,6 +560,7 @@ void uploadFiles(string groupId, string &output, int clientSocket, string filena
     }
     else
     {
+      
         string username;
         auto it = userHelper.find(clientSocket);
         username = it->second;
@@ -801,6 +802,25 @@ vector<string> str_tokenize(string str)
     for (int i = 0; i < (int)str.size(); i++)
     {
         if (str[i] == ' ')
+        {
+            tokens.push_back(temp);
+            temp = "";
+        }
+        else
+        {
+            temp += str[i];
+        }
+    }
+    tokens.push_back(temp);
+    return tokens;
+}
+vector<string> file_tokenize(string str)
+{
+    vector<string> tokens;
+    string temp = "";
+    for (int i = 0; i < (int)str.size(); i++)
+    {
+        if (str[i] == '/')
         {
             tokens.push_back(temp);
             temp = "";

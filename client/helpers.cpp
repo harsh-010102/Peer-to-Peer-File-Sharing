@@ -9,6 +9,7 @@ void handleCommand(int seederSocket, string trackerIp, int trackerPort, int clie
     }
     struct sockaddr_in tracker_addr;
     tracker_addr.sin_family = AF_INET;
+    cout << "helpers.cpp-- " << trackerPort << endl;
     tracker_addr.sin_port = htons(trackerPort);
     tracker_addr.sin_addr.s_addr = INADDR_ANY;
 
@@ -177,6 +178,8 @@ string execute(vector<string> tokens, int client_socket, int trackerPort, int cl
             string SHA = findSHA(filepath.c_str());
             vector<string> nameTokens = str_tokenize(filepath, '/');
             string fileName = nameTokens[nameTokens.size() - 1];
+            cout <<endl;    
+            cout << "fileName " << fileName << endl;
             return upload_file(client_socket, fileName, filepath, groupId, SHA, bytes);
         }
     }
@@ -333,8 +336,20 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             cerr << "Error getting chuck info\n";
             return "";
         }
+        cout << " here 1 " << endl;
 
         char output[BUFF];
+        memset(output, 0, BUFF);
+        cout << " here 2 " << endl;
+
+        if (read(seederSocket, output, sizeof(output)) < 0)
+        {
+            cerr << "Error reading chuck info\n";
+            return "";
+        }
+        cout << " here 3 " << endl;
+
+        string message = output;
         memset(output, 0, BUFF);
 
         if (read(seederSocket, output, sizeof(output)) < 0)
@@ -342,9 +357,11 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             cerr << "Error reading chuck info\n";
             return "";
         }
+        cout << " here 4 " << endl;
+
+        message += output;
 
         cout << "output from seeder------" << endl;
-        string message = output;
         cout << message << endl;
 
         vector<string> message_tokens = str_tokenize(message, ' ');
@@ -410,42 +427,42 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
     else
     {
 
-        int output_fd = open(destination_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-        if (output_fd < 0)
-        {
-            cerr << "Error on opening file\n";
-            return "";
-        }
-        else
-        {
-            char buffer[chunk_size];
-            memset(buffer, 0, chunk_size);
-            cout << "No of chunks at writing part " << no_of_chunks << endl;
-            for (int i = 0; i < no_of_chunks - 1; i++)
-            {
-                if (write(output_fd, buffer, chunk_size) < 0)
-                {
-                    cerr << "Error writing file\n";
-                    return "";
-                }
-            }
+        // int output_fd = open(destination_path.c_str(), O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+        // if (output_fd < 0)
+        // {
+        //     cerr << "Error on opening file\n";
+        //     return "";
+        // }
+        // else
+        // {
+        //     char buffer[chunk_size];
+        //     memset(buffer, 0, chunk_size);
+        //     cout << "No of chunks at writing part " << no_of_chunks << endl;
+        //     for (int i = 0; i < no_of_chunks - 1; i++)
+        //     {
+        //         if (write(output_fd, buffer, chunk_size) < 0)
+        //         {
+        //             cerr << "Error writing file\n";
+        //             return "";
+        //         }
+        //     }
 
-            int mod = size % chunk_size;
-            if (mod == 0)
-            {
-                mod = chunk_size;
-            }
-            char buffer1[mod];
+        //     int mod = size % chunk_size;
+        //     if (mod == 0)
+        //     {
+        //         mod = chunk_size;
+        //     }
+        //     char buffer1[mod];
 
-            bzero(buffer1, mod);
+        //     bzero(buffer1, mod);
 
-            if (write(output_fd, buffer1, mod) < 0)
-            {
-                cerr << "Error writing file\n";
-                return "";
-            }
-        }
-        close(output_fd);
+        //     if (write(output_fd, buffer1, mod) < 0)
+        //     {
+        //         cerr << "Error writing file\n";
+        //         return "";
+        //     }
+        // }
+        // close(output_fd);
 
         cout << "no_of_chunks " << temp << endl;
         for (int i = 0; i < no_of_chunks; i++)
@@ -461,8 +478,8 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             vector<string> address2 = str_tokenize(chunk.second, ':');
             string ip = address2[0];
             int port = stoi(address2[1]);
-            cout << "ip and port after piece selection "
-                 << " " << ip << " " << port << endl;
+            // cout << "ip and port after piece selection "
+            //      << " " << ip << " " << port << endl;
 
             int seeder_socket = socket(AF_INET, SOCK_STREAM, 0);
             if (seeder_socket == -1)
@@ -512,7 +529,8 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             {
                 return "Error at reading from socket";
             }
-            string ans = output;
+            // string ans = output;
+            string ans(output, chunk_size);
             vector<string> ans_token = str_tokenize(ans, ' ');
 
             if (ans_token[0] == "Error")
@@ -522,7 +540,7 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             }
             else
             {
-                int output_fd1 = open(destination_path.c_str(), O_RDWR, S_IRWXU);
+                int output_fd1 = open(destination_path.c_str(), O_RDWR | O_CREAT, S_IRWXU);
                 if (output_fd1 < 0)
                 {
                     cerr << "Error while writing file\n";
@@ -573,9 +591,9 @@ string handleDownloadOfFile(char output[10240], string filename, string destinat
             close(seeder_socket);
         }
     }
-    SHA = findSHA(destination_path.c_str());
+    // SHA = findSHA(destination_path.c_str());
     int bytes = fileSize(destination_path.c_str());
-    cout << "SHA is " << SHA << endl;
+    cout << "SHA is matched" << endl;
     cout << "Bytes is" << bytes << endl;
     return "";
 }
@@ -592,7 +610,7 @@ string upload_file(int client_socket, string file_name, string filepath, string 
     }
     new_file.available_chunk = v;
     filesInGroup.insert({file_name, new_file});
-    string command = "upload_file " + filepath + " " + groupId + " " + SHA + " " + to_string(bytes);
+    string command = "upload_file " + file_name + " " + groupId + " " + SHA + " " + to_string(bytes);
     if (write(client_socket, command.c_str(), command.size()) < 0)
     {
         return "Error while uploading files\n";
@@ -854,6 +872,7 @@ void handleLeecherReq(int leecher_socket)
         close(leecher_socket);
         return;
     }
+    close(leecher_socket);
 }
 string handleCommandofLeecher(vector<string> input_tokens, int leecher_socket)
 {
@@ -872,8 +891,15 @@ string handleCommandofLeecher(vector<string> input_tokens, int leecher_socket)
             else
             {
                 string file = input_tokens[1];
+                cout << file << endl;
+                for (auto it : filesInGroup)
+                {
+                    cout << it.first << " ";
+                }
+                cout << endl;
                 if (filesInGroup.find(file) == filesInGroup.end())
                 {
+                    // cout << "Hello 1 2 3"<<endl;
                     return "Success ";
                 }
                 else
@@ -921,14 +947,23 @@ string handleCommandofLeecher(vector<string> input_tokens, int leecher_socket)
                 lseek(fd, pos, SEEK_SET);
 
                 char output[chunk_size];
-
                 if (read(fd, output, chunk_size) < 0)
                 {
                     return "Error while reading file\n";
                 }
-
-                close(fd);
-                return output;
+                if (chunk_no == ceil(filesInGroup.find(file_name)->second.size * 1.0 / chunk_size) - 1)
+                {
+                    int size = filesInGroup.find(file_name)->second.size % chunk_size;
+                    string str(output, size);
+                    close(fd);
+                    return str;
+                }
+                else
+                {
+                    close(fd);
+                    string str(output, chunk_size);
+                    return str;
+                }
             }
         }
     }

@@ -1,19 +1,21 @@
-Tracker is currently running on port : 5000
+Tracker is currently running on port : 7000
 Client socket is connected with socket number: 5
 Client socket is connected with socket number: 6
-Client 6 sends message: create_user a a
-Client 6 sends message: login a a 7013
-Client socket is connected with socket number: 5
-Client 5 sends message: create_user b b
-Client 5 sends message: login b b 7016
-Client 5 sends message: create_group x
-Client 5 sends message: join_group x
-Client 6 sends message: join_group x
-Client 5 sends message: accept_request x a
-Client 5 sends message: upload_file input1mb.txt x 37606e05c252b4eedca91d504582db779152f2774e74139e7f63c6a46a0d3abd 1000000
-Client 6 sends message: download_file x input1mb.txt
-Client 5 sends message: upload_file input100mb.txt x 35de3412fad96a8c9e39df3108ce7526bc9b961595f7de579817ab8ccaf8f10c 100000000
-Client 6 sends message: download_file x input100mb.txt
 Client socket is connected with socket number: 7
 Client 7 sends message: create_user a a
-Client 7 sends message: login a a 7016
+Client 5 sends message: create_user b b
+Client 6 sends message: create_user c c
+Client 6 sends message: login b b 8989
+Client 5 sends message: login c c 8988
+Client 7 sends message: login a a 8990
+Client 5 sends message: create_group x
+Client 5 sends message: join_group x
+Client 7 sends message: join_group x
+Client 6 sends message: join_group x
+Client 5 sends message: accept_request x a
+Client 5 sends message: accept_request x b
+Client 5 sends message: upload_file video.mp4 x 64d396254091e3de178c4e75a23d5d4152dae718ec96b118e2a6a7cc85ae65e5 308155389
+Client 6 sends message: list_files x
+Client 6 sends message: upload_file video.mp4 x 64d396254091e3de178c4e75a23d5d4152dae718ec96b118e2a6a7cc85ae65e5 308155389
+Client 7 sends message: list_files x
+Client 7 sends message: download_file x video.mp4

@@ -1,5 +1,7 @@
 # AOS ASSIGNMENT - 4
 ## Distributed File System
+download_file x video.mp4 ./test/outVid.mp4
+upload_file /home/harsh/harsh/aos/Assignment-4/eval/A4_Eval/a/video.mp4 x
 
 -  Should be able to download_file​ from various peers in the network.
 
